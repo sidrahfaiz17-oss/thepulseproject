@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Pulse Project</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --cream: #FAF3E8;
+    --ink: #3B2314;
+    --rust: #C4856A;
+    --muted: #8C6E5A;
+    --border: #D9C4A8;
+    --pale: #F0E4CE;
+    --accent: #F2C4B0;
+    --deep: #2A1A0C;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--cream);
+    color: var(--ink);
+    font-family: 'EB Garamond', Georgia, serif;
+    font-size: 18px;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* NOISE TEXTURE OVERLAY */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.4;
+  }
+
+  /* TOP TICKER */
+  .ticker-wrap {
+    background: var(--deep);
+    color: var(--cream);
+    padding: 6px 0;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+  .ticker-inner {
+    display: inline-block;
+    animation: ticker 30s linear infinite;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-weight: 300;
+    font-size: 12px;
+    letter-spacing: 0.12em;
+  }
+  @keyframes ticker {
+    0% { transform: translateX(100vw); }
+    100% { transform: translateX(-100%); }
+  }
+  .ticker-sep { margin: 0 2rem; color: var(--accent); }
+
+  /* MASTHEAD */
+  .masthead {
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+  }
+  .masthead-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0 0.5rem;
+    border-bottom: 0.5px solid var(--border);
+  }
+  .masthead-date {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-weight: 300;
+    font-size: 13px;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    font-style: italic;
+  }
+  .masthead-tagline {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-weight: 300;
+    font-size: 12px;
+    color: var(--rust);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+  .masthead-title {
+    text-align: center;
+    padding: 1.5rem 0 1rem;
+  }
+  .masthead-title h1 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: clamp(3rem, 8vw, 6.5rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    color: var(--ink);
+  }
+  .masthead-title .subtitle {
+    font-family: 'EB Garamond', Georgia, serif;
+    font-style: italic;
+    font-size: 1rem;
+    color: var(--muted);
+    margin-top: 0.4rem;
+    letter-spacing: 0.02em;
+  }
+  .masthead-rule {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.6rem 0;
+  }
+  .masthead-rule::before, .masthead-rule::after {
+    content: '';
+    flex: 1;
+    height: 2px;
+    background: var(--ink);
+  }
+  .masthead-rule span {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-weight: 300;
+    font-style: italic;
+    font-size: 13px;
+    letter-spacing: 0.15em;
+    color: var(--ink);
+    white-space: nowrap;
+  }
+
+  /* NAV */
+  nav {
+    display: flex;
+    justify-content: center;
+    gap: 2.5rem;
+    padding: 0.75rem 0;
+    flex-wrap: wrap;
+  }
+  nav a {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-weight: 300;
+    font-size: 13px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink);
+    text-decoration: none;
+    position: relative;
+    transition: color 0.2s;
+  }
+  nav a::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background: var(--rust);
+    transition: width 0.3s;
+  }
+  nav a:hover { color: var(--rust); }
+  nav a:hover::after { width: 100%; }
+
+  /* HERO GRID */
+  .hero {
+    display: grid;
+    grid-template-columns: 1fr 2px 1.4fr 2px 1fr;
+    gap: 0;
+    padding: 2rem;
+    border-bottom: 1px solid var(--border);
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+  .col-divider {
+    background: var(--border);
+    margin: 0 1.5rem;
+  }
+
+  /* FEATURED ARTICLE */
+  .feature-article {
+    padding-right: 1.5rem;
+  }
+  .feature-article .label {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-weight: 300;
+    font-style: italic;
+    font-size: 13px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--rust);
+    display: block;
+    margin-bottom: 0.75rem;
+  }
+  .feature-article h2 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: clamp(1.6rem, 2.5vw, 2.4rem);
+    font-weight: 700;
+    line-height: 1.15;
+    margin-bottom: 1rem;
+    color: var(--ink);
+  }
+  .feature-article h2 em {
+    font-style: italic;
+    color: var(--rust);
+  }
+  .feature-article .byline {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-weight: 300;
+    font-style: italic;
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin-bottom: 1rem;
+  }
+  .feature-article p {
+    font-size: 1rem;
+    line-height: 1.8;
+    color: var(--ink);
+  }
+  .feature-article .read-more {
+    display: inline-block;
+    margin-top: 1.2rem;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-weight: 300;
+    font-size: 13px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--rust);
+    text-decoration: none;
+    border-bottom: 1px solid var(--rust);
+    padding-bottom: 2px;
+    transition: opacity 0.2s;
+  }
+  .feature-article .read-more:hover { opacity: 0.7; }
+
+  /* HERO IMAGE */
+  .hero-center {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .hero-image {
+    width: 100%;
+    aspect-ratio: 3/4;
+    background: var(--pale);
+    border: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 1.5rem;
+  }
+  .hero-image .hero-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 30% 20%, rgba(139,58,26,0.12) 0%, transparent 60%),
+      radial-gradient(ellipse at 70% 80%, rgba(26,18,8,0.08) 0%, transparent 50%),
+      linear-gradient(180deg, var(--pale) 0%, #D4C9B0 100%);
+  }
+  .hero-image .hero-cross {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -60%);
+    width: 80px;
+    height: 80px;
+    opacity: 0.08;
+  }
+  .hero-image .hero-caption {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+  }
+  .hero-image .vol {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-weight: 300;
+    font-style: italic;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+  .hero-image .issue-title {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 1.3rem;
+    color: var(--ink);
+    line-height: 1.2;
+  }
+  .mission-pull {
+    border-left: 3px solid var(--rust);
+    padding-left: 1.2rem;
+  }
+  .mission-pull p {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: var(--ink);
+  }
+  .mission-pull cite {
+    display: block;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 0.5rem;
+    font-style: normal;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  /* RIGHT SIDEBAR */
+  .sidebar {
+    padding-left: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .sidebar-item {
+    border-bottom: 0.5px solid var(--border);
+    padding-bottom: 1.5rem;
+  }
+  .sidebar-item:last-child { border-bottom: none; padding-bottom: 0; }
+  .sidebar-item .label {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-weight: 300;
+    font-style: italic;
+    font-size: 12px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--rust);
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+  .sidebar-item h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    line-height: 1.3;
+    margin-bottom: 0.5rem;
+    color: var(--ink);
+  }
+  .sidebar-item p {
+    font-size: 0.88rem;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+  .sidebar-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--border);
+    line-height: 1;
+    margin-bottom: 0.25rem;
+  }
+
+  /* SECTION DIVIDER */
+  .section-label {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.5rem 2rem 1rem;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+  .section-label::before {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+  .section-label span {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-weight: 300;
+    font-style: italic;
+    font-size: 14px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ARTICLE GRID */
+  .article-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    border-top: 1px solid var(--border);
+    max-width: 1400px;
+    margin: 0 auto 0;
+    padding: 0 2rem;
+  }
+  .article-card {
+    padding: 1.5rem 1.5rem 1.5rem 0;
+    border-right: 0.5px solid var(--border);
+    transition: opacity 0.2s;
+  }
+  .article-card:last-child { border-right: none; padding-right: 0; padding-left: 1.5rem; }
+  .article-card:nth-child(2) { padding-left: 1.5rem; }
+  .article-card:hover { opacity: 0.8; }
+  .article-card .label {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-weight: 300;
+    font-style: italic;
+    font-size: 12px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--rust);
+    display: block;
+    margin-bottom: 0.6rem;
+  }
+  .article-card h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.15rem;
+    font-weight: 600;
+    line-height: 1.3;
+    margin-bottom: 0.6rem;
+    color: var(--ink);
+  }
+  .article-card p {
+    font-size: 0.9rem;
+    color: var(--muted);
+    line-height: 1.65;
+  }
+  .article-card .meta {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-weight: 300;
+    font-style: italic;
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 0.8rem;
+    letter-spacing: 0.05em;
+  }
+
+  /* ABOUT BAND */
+  .about-band {
+    background: var(--deep);
+    color: var(--cream);
+    padding: 3rem 2rem;
+    margin-top: 2rem;
+  }
+  .about-inner {
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+  }
+  .about-inner .eyebrow {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-weight: 300;
+    font-style: italic;
+    font-size: 14px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--rust);
+    display: block;
+    margin-bottom: 1.5rem;
+  }
+  .about-inner h2 {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: clamp(1.5rem, 3vw, 2.2rem);
+    font-weight: 400;
+    line-height: 1.4;
+    color: var(--cream);
+    margin-bottom: 1.5rem;
+  }
+  .about-inner h2 strong {
+    font-style: normal;
+    font-weight: 700;
+    color: #fff;
+  }
+  .about-inner p {
+    font-size: 1rem;
+    color: #C9A898;
+    line-height: 1.8;
+    margin-bottom: 2rem;
+  }
+  .about-inner .cta-row {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .btn-primary {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-weight: 300;
+    font-size: 13px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    background: var(--deep);
+    color: var(--cream);
+    border: none;
+    padding: 0.75rem 2rem;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: opacity 0.2s;
+  }
+  .btn-primary:hover { opacity: 0.85; }
+  .btn-outline {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-weight: 300;
+    font-size: 13px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    background: transparent;
+    color: var(--cream);
+    border: 1px solid var(--accent);
+    padding: 0.75rem 2rem;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: border-color 0.2s;
+  }
+  .btn-outline:hover { border-color: var(--cream); }
+
+  /* SUBMIT BAND */
+  .submit-band {
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 2rem;
+  }
+  .submit-band h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+  }
+  .submit-band p {
+    font-size: 0.9rem;
+    color: var(--muted);
+  }
+
+  /* FOOTER */
+  footer {
+    background: var(--pale);
+    border-top: 1px solid var(--border);
+    padding: 2rem;
+    text-align: center;
+  }
+  footer .footer-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin-bottom: 0.5rem;
+  }
+  footer p {
+    font-size: 0.9rem;
+    color: var(--muted);
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-weight: 300;
+    font-style: italic;
+    letter-spacing: 0.05em;
+  }
+  footer .footer-links {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+  }
+  footer .footer-links a {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-weight: 300;
+    font-style: italic;
+    font-size: 13px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  footer .footer-links a:hover { color: var(--rust); }
+
+  /* ORNAMENT */
+  .ornament {
+    text-align: center;
+    color: var(--border);
+    font-size: 1.2rem;
+    letter-spacing: 0.4em;
+    padding: 0.5rem 0;
+  }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .masthead-title h1 { animation: fadeUp 0.8s ease both; }
+  .masthead-title .subtitle { animation: fadeUp 0.8s 0.1s ease both; }
+  .hero { animation: fadeUp 0.8s 0.2s ease both; }
+
+  /* RESPONSIVE */
+  @media (max-width: 900px) {
+    .hero {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+    .col-divider { display: none; }
+    .feature-article { padding-right: 0; }
+    .sidebar { padding-left: 0; border-top: 1px solid var(--border); padding-top: 1.5rem; }
+    .article-grid {
+      grid-template-columns: 1fr;
+    }
+    .article-card { border-right: none; border-bottom: 0.5px solid var(--border); padding: 1.5rem 0; }
+    .article-card:last-child { padding-left: 0; }
+    .article-card:nth-child(2) { padding-left: 0; }
+    .submit-band { grid-template-columns: 1fr; }
+    .hero-image { aspect-ratio: 16/9; }
+  }
+</style>
+</head>
+<body>
+
+<!-- TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker-inner">
+    LAUNCHING 2025 <span class="ticker-sep">◆</span> STUDENT-LED HUMANITARIAN HEALTH RESEARCH <span class="ticker-sep">◆</span> CONFLICT ZONES · REFUGEE COMMUNITIES · UNDERSERVED POPULATIONS · DISASTER-AFFECTED AREAS <span class="ticker-sep">◆</span> WE ALREADY KNOW PEOPLE ARE SUFFERING. WE EXIST TO ASK WHY THAT'S STILL ALLOWED TO HAPPEN. <span class="ticker-sep">◆</span> SUBMISSIONS OPEN TO STUDENTS WORLDWIDE <span class="ticker-sep">◆</span>
+  </div>
+</div>
+
+<!-- MASTHEAD -->
+<header class="masthead">
+  <div class="masthead-top">
+    <span class="masthead-date">Founded 2025</span>
+    <span class="masthead-tagline">Humanitarian Health Research</span>
+    <span class="masthead-date">Student-Led &nbsp;·&nbsp; Open Access</span>
+  </div>
+  <div class="masthead-title">
+    <h1>The Pulse Project</h1>
+    <p class="subtitle">A student-led journal of humanitarian health — for the communities the world forgets</p>
+  </div>
+  <div class="masthead-rule">
+    <span>Est. 2025 &nbsp;·&nbsp; Conflict · Displacement · Crisis · Care</span>
+  </div>
+  <nav>
+    <a href="#">Research</a>
+    <a href="#">Field Dispatches</a>
+    <a href="#">Interviews</a>
+    <a href="#">Data & Evidence</a>
+    <a href="#">About</a>
+    <a href="#">Submit</a>
+  </nav>
+</header>
+
+<!-- HERO GRID -->
+<div class="hero">
+
+  <!-- FEATURE LEFT -->
+  <article class="feature-article">
+    <span class="label">◆ Featured Research</span>
+    <h2>The Hospitals That Were There: <em>Maternal Death After Infrastructure Collapse in Conflict Zones</em></h2>
+    <p class="byline">By The Pulse Project Editorial Team &nbsp;·&nbsp; Inaugural Issue</p>
+    <p>Every two minutes, a woman dies in childbirth somewhere in the world. In conflict zones, that number is profoundly worse — not because medicine has failed, but because the buildings that housed it were destroyed. This is the story of what happens after.</p>
+    <a href="#" class="read-more">Continue reading →</a>
+  </article>
+
+  <div class="col-divider"></div>
+
+  <!-- CENTER -->
+  <div class="hero-center">
+    <div class="hero-image">
+      <div class="hero-bg"></div>
+      <svg class="hero-cross" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="40" y="5" width="20" height="90" fill="currentColor"/>
+        <rect x="5" y="40" width="90" height="20" fill="currentColor"/>
+      </svg>
+      <div class="hero-caption">
+        <span class="vol">Inaugural Issue · 2025</span>
+        <div class="issue-title">"The Forgotten"</div>
+      </div>
+    </div>
+    <div class="mission-pull">
+      <p>"We already know people are suffering. We exist to ask why that's still allowed to happen."</p>
+      <cite>— The Pulse Project, Mission Statement</cite>
+    </div>
+  </div>
+
+  <div class="col-divider"></div>
+
+  <!-- SIDEBAR RIGHT -->
+  <aside class="sidebar">
+    <div class="sidebar-item">
+      <span class="label">◆ In This Issue</span>
+      <h3>Why Conflict Medicine Remains Underfunded</h3>
+      <p>A data-driven look at global health funding allocations and what falls through the cracks when crises become chronic.</p>
+    </div>
+    <div class="sidebar-item">
+      <span class="label">◆ Practitioner Interview</span>
+      <h3>Voices from the Field</h3>
+      <p>An exclusive interview with a humanitarian health researcher on what policy gets wrong about displacement medicine.</p>
+    </div>
+    <div class="sidebar-item">
+      <span class="label">◆ By the Numbers</span>
+      <div class="sidebar-num">139M</div>
+      <p>People currently in need of humanitarian assistance worldwide — more than at any point in recorded history.</p>
+    </div>
+  </aside>
+
+</div>
+
+<!-- SECTION: RECENT ARTICLES -->
+<div class="section-label">
+  <span>Recent Articles</span>
+</div>
+
+<div class="article-grid">
+  <article class="article-card">
+    <span class="label">◆ Mental Health</span>
+    <h3>Before They Leave: The Unmeasured Psychology of Pre-Displacement</h3>
+    <p>Research on trauma begins at the border crossing. But what happens to the mind in the weeks before flight — when departure is certain but still hasn't come?</p>
+    <div class="meta">Research Spotlight &nbsp;·&nbsp; 8 min read</div>
+  </article>
+  <article class="article-card">
+    <span class="label">◆ Maternal Health</span>
+    <h3>What Women Build When the Hospital Is Gone</h3>
+    <p>In communities where formal healthcare collapsed, informal maternal care networks emerged. Almost no one has documented them. We did.</p>
+    <div class="meta">Field Dispatch &nbsp;·&nbsp; 11 min read</div>
+  </article>
+  <article class="article-card">
+    <span class="label">◆ Disease & Crisis</span>
+    <h3>The Second Wave: Preventable Disease Outbreaks After Disaster</h3>
+    <p>Floods and earthquakes get the headlines. The cholera outbreaks that follow three months later do not. A look at the long tail of disaster health.</p>
+    <div class="meta">Data Analysis &nbsp;·&nbsp; 9 min read</div>
+  </article>
+</div>
+
+<div class="ornament" style="padding: 1.5rem 0;">— ◆ —</div>
+
+<!-- ABOUT BAND -->
+<div class="about-band">
+  <div class="about-inner">
+    <span class="eyebrow">◆ About The Pulse Project</span>
+    <h2>"We already know people are suffering.<br><strong>We exist to ask why that's still allowed to happen."</strong></h2>
+    <p>The Pulse Project is a student-led research publication focused on health outcomes in conflict zones, refugee and displaced communities, disaster-affected populations, and remote underserved areas. Founded at Folsom Lake College, it exists to bridge the gap between what we know and what actually changes on the ground.</p>
+    <div class="cta-row">
+      <a href="#" class="btn-primary">Read the First Issue</a>
+      <a href="#" class="btn-outline">Submit Your Research</a>
+    </div>
+  </div>
+</div>
+
+<!-- SUBMIT BAND -->
+<div class="submit-band">
+  <div>
+    <h3>Write for The Pulse Project</h3>
+    <p>We accept research articles, field dispatches, practitioner interviews, and data analyses from students and early-career researchers worldwide. Open access. No fees. No gatekeeping.</p>
+  </div>
+  <a href="#" class="btn-primary" style="white-space: nowrap;">Submit a Piece →</a>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-title">The Pulse Project</div>
+  <p>A student-led humanitarian health publication &nbsp;·&nbsp; Founded 2025</p>
+  <div class="footer-links">
+    <a href="#">Research</a>
+    <a href="#">Field Dispatches</a>
+    <a href="#">Interviews</a>
+    <a href="#">Submit</a>
+    <a href="#">About</a>
+    <a href="#">Contact</a>
+    <a href="#">Instagram</a>
+    <a href="#">TikTok</a>
+  </div>
+  <p style="margin-top: 1.5rem; font-size: 0.75rem;">© 2025 The Pulse Project. Open access. All rights reserved.</p>
+</footer>
+
+</body>
+</html>
